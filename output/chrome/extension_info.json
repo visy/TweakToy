@@ -1,0 +1,13 @@
+{
+    "content_scripts": [
+        "tweak.js"
+    ], 
+    "description": "Adds friendly tweak controls to ShaderToy.", 
+    "creator": "visy", 
+    "framework_version": "1.8.0 3dc957b83b36", 
+    "homepage_url": "", 
+    "version": "1.0.0", 
+    "framework_package_id": "dev", 
+    "id": "{132E47BF-0E8A-4AAA-8D1E-B2C3EEA895C3}", 
+    "name": "TweakToy"
+}

@@ -1,0 +1,13 @@
+{
+    "content_scripts": [
+        "tweak.js"
+    ], 
+    "description": "Adds friendly tweak controls to ShaderToy.", 
+    "creator": "visy", 
+    "framework_version": "1.8.0 3dc957b83b36", 
+    "homepage_url": "", 
+    "version": "1.0.0", 
+    "framework_package_id": "dev", 
+    "id": "com.kangoextensions.jquerydemo", 
+    "name": "TweakToy"
+}
