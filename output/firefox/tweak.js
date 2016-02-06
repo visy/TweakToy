@@ -4,6 +4,8 @@
 // @include https://*
 // @include about:blank
 // @require jquery-1.9.1.min.js
+// @require rangeslider.min.js
+// @require rangeslider.css
 // ==/UserScript==
 
 var $ = window.$.noConflict(true); // Required for IE
@@ -82,26 +84,63 @@ tweakui.click(function() {
 
 	setTimeout(function() { 
 		var shadercode = window.shadercode;
-		$( "#tweakui" ).replaceWith("<div id = 'tweaker' style = 'width:680px;height:300px;background-color:black;opacity:0.9;border: 4px solid white;position:absolute;left:0px;top:626px;'/>")
+		$( "#tweakui" ).replaceWith("<div id = 'tweaker' style = 'width:680px;height:500px;background-color:white;opacity:0.9;border: 4px solid grey;position:absolute;left:0px;top:426px;'/>")
 
 		var gl = document.getElementById("demogl").getContext("experimental-webgl");
 		var prog = gl.getParameter(gl.CURRENT_PROGRAM);
 
-		var inUnis = shadercode.split("uniform float")[1].split(";")[0].trim();
-		alert ("."+inUnis+".");
+		var inUnis = shadercode.split("uniform float");
+		window.offsetLoc = [];
+		window.offsetName = [];
 
-		window.offsetLoc = gl.getUniformLocation(prog, inUnis);
-		alert (window.offsetLoc);
+		for (var i = 0; i < inUnis.length; i++) {
+			var uniformName = inUnis[i].split(";")[0].trim();
+			if (uniformName == null) break;
+			else {
+				alert(i + " - " + uniformName);
+				window.offsetLoc[i] = gl.getUniformLocation(prog, uniformName);
+				window.offsetName[i] = uniformName;
+			}
+		}
 
-		$( "#tweaker" ).append('  <input id="slider1" type="range" min="0.0" max="10" step="0.01" /> ')
-		$( "#tweaker" ).append('  <input id="slider2" type ="range" min ="100" max="500" step ="50" value ="100"/> ')
-		$( "#tweaker" ).append('  <input id="slider3" type ="range" min ="-2.5" max="3.0" step ="0.1"/>  ')
+	
+		$( "#tweaker" ).append('<div id="unicha1" style = "width:300px;float:right;" ><h3>uniform: ' + window.offsetName[1] + '</h3><br> <input style="position: absolute; width: 300px; height: 16px; overflow: hidden; opacity: 1;" min="1" max="1000" step="1" data-rangeslider="" type="range" id="slider1"><div class="rangeslider rangeslider--horizontal" id="js-rangeslider-4"><div style="width: 135.556px;" class="rangeslider__fill"></div><div style="left: 115.556px;" class="rangeslider__handle"></div></div> <output id ="output1">0</output> <br/><label><input name="min" value="10" type="number"> <code>min</code></label><br> <label><input name="max" value="100" type="number"> <code>max</code></label><br> <label><input name="step" value="5" type="number"> <code>step</code></label> <br> <br> <button class="button button--small" id = "button1">Change attributes</button></div>');
+		$( "#tweaker" ).append('<div id="unicha2" style = "width:300px;float:right;" ><h3>uniform: ' + window.offsetName[2] + '</h3><br> <input style="position: absolute; width: 300px; height: 16px; overflow: hidden; opacity: 1;" min="1" max="1000" step="1" data-rangeslider="" type="range" id="slider2"><div class="rangeslider rangeslider--horizontal" id="js-rangeslider-5"><div style="width: 135.556px;" class="rangeslider__fill"></div><div style="left: 115.556px;" class="rangeslider__handle"></div></div> <output id ="output2">0</output> <br/><label><input name="min" value="10" type="number"> <code>min</code></label><br> <label><input name="max" value="100" type="number"> <code>max</code></label><br> <label><input name="step" value="5" type="number"> <code>step</code></label> <br> <br> <button class="button button--small" id = "button2">Change attributes</button></div>');
+		$( "#tweaker" ).append('<div id="unicha3" style = "width:300px;float:right;" ><h3>uniform: ' + window.offsetName[3] + '</h3><br> <input style="position: absolute; width: 300px; height: 16px; overflow: hidden; opacity: 1;" min="1" max="1000" step="1" data-rangeslider="" type="range" id="slider3"><div class="rangeslider rangeslider--horizontal" id="js-rangeslider-6"><div style="width: 135.556px;" class="rangeslider__fill"></div><div style="left: 115.556px;" class="rangeslider__handle"></div></div> <output id ="output3">0</output> <br/><label><input name="min" value="10" type="number"> <code>min</code></label><br> <label><input name="max" value="100" type="number"> <code>max</code></label><br> <label><input name="step" value="5" type="number"> <code>step</code></label> <br> <br> <button class="button button--small" id = "button3">Change attributes</button></div>');
 
-		$( "#slider1" ).on("input change", function() { 
-			gl.uniform1f(window.offsetLoc,$( "#slider1" ).val());
+	$('input[type="range"]').rangeslider();
 
+		$( "#slider1" ).on("input change", function() { gl.uniform1f(window.offsetLoc[1],$( "#slider1" ).val()/1000.0); $("#output1").innerHTML = ""+$( "#slider1" ).val()/1000.0; });
+		$( "#slider2" ).on("input change", function() { gl.uniform1f(window.offsetLoc[2],$( "#slider2" ).val()/1000.0); $("#output2").innerHTML = ""+$( "#slider2" ).val()/1000.0; });
+		$( "#slider3" ).on("input change", function() { gl.uniform1f(window.offsetLoc[3],$( "#slider3" ).val()/1000.0); $("#output3").innerHTML = ""+$( "#slider3" ).val()/1000.0; });
 
-		 });
+		$( "#button1").click(function(e) {
+			var $inputRange = $('[data-rangeslider]', e.target.parentNode);
+			  var attributes = {
+			    min: $('input[name="min"]', e.target.parentNode)[0].value,
+			    max: $('input[name="max"]', e.target.parentNode)[0].value,
+			    step: $('input[name="step"]', e.target.parentNode)[0].value
+			  };
+			  $inputRange.attr(attributes).rangeslider('update', true);
+		});
+		$( "#button2").click(function(e) {
+			var $inputRange = $('[data-rangeslider]', e.target.parentNode);
+			  var attributes = {
+			    min: $('input[name="min"]', e.target.parentNode)[0].value,
+			    max: $('input[name="max"]', e.target.parentNode)[0].value,
+			    step: $('input[name="step"]', e.target.parentNode)[0].value
+			  };
+			  $inputRange.attr(attributes).rangeslider('update', true);
+		});
+		$( "#button3").click(function(e) {
+			var $inputRange = $('[data-rangeslider]', e.target.parentNode);
+			  var attributes = {
+			    min: $('input[name="min"]', e.target.parentNode)[0].value,
+			    max: $('input[name="max"]', e.target.parentNode)[0].value,
+			    step: $('input[name="step"]', e.target.parentNode)[0].value
+			  };
+			  $inputRange.attr(attributes).rangeslider('update', true);
+		});
 	
 	},500);
 });
